@@ -76,7 +76,7 @@ if nargin < 2 | isempty(Stau),     Stau=1.5;      end
 if any(Nrep ~= round(Nrep)) | any(Nrep < 1) | sum(Nrep) ~= N
   error('inconsistent N,Nrep')
 end
-
+Name='NoName';
 if isnumeric(Quantity)
    if round(Quantity) ~= Quantity | Quantity < 1 | Quantity > Nalpha
        error('illegal numeric value of Quantity')
