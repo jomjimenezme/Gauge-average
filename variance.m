@@ -24,13 +24,13 @@ for tau = 0:max_tau
         val = mean(tr .* tr_shift);
 
         % Stochastic variance (var_noise = 1/T^2 sum [...])
-        var_noise = mean(var .* (tr_shift.^2) + var_shift .* (tr.^2)) / num_timeslices^2;
+        %var_noise = mean(var .* (tr_shift.^2) + var_shift .* (tr.^2)) / num_timeslices^2;
                 
         var_deriv = 0;
         for tp = 1:num_timeslices
             tp_minus = mod(tp - tau - 1, num_timeslices) + 1;
             tp_plus = mod(tp + tau - 1, num_timeslices) + 1;
-            coeff = (tr(tp_plus) + tr(tp_minus));% / num_timeslices;
+            coeff = (tr(tp_plus) + tr(tp_minus));
             var_deriv = var_deriv + coeff^2 * var(tp);
         end
 
@@ -43,10 +43,11 @@ for tau = 0:max_tau
     % Apply UWerr to get gauge error
     [mean_val, dval] = UWerr(val_vec, 1.5, [], [], 1);
      
-    % Final total error: combine UWerr variance and noise estimate (Eq. 13)
+    % Final total error: combine UWerr variance and noise estimate 
     mean_noise_var = mean(noise_var_vec);
-    total_var = dval^2 + mean_noise_var / (num_configs);
-
+    total_var = (dval^2 + mean_noise_var) / (num_configs);
+    var_gauge = total_var*num_configs - mean_noise_var;
+    fprintf("Total %f\t Noise %f \t Gauge %f\n", total_var/1E6, mean_noise_var/1E6, var_gauge/1E6 );
     C_tau(tau+1) = mean_val;
     C_tau_err(tau+1) = sqrt(total_var);
 end
